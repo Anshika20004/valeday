@@ -1,0 +1,201 @@
+
+<style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  font-family: sans-serif;
+  background-color: rgb(1, 1, 1);
+  background-image: linear-gradient(rgb(0, 0, 0, 0.5), rgb(0, 0, 0, 0.5));
+  color: white;
+  transition: background-color 500ms ease;
+} /* header */
+header {
+  position: absolute;
+  z-index: 999;
+  text-align: center;
+  top: 0rem;
+  padding: 1rem;
+  background: inherit;
+}
+.container {
+  position: relative;
+  width: min(400px, 100%);
+} /* holidays */
+ul {
+  list-style: none;
+  width: 100%;
+  height: 50%;
+  position: relative;
+  perspective: 900px;
+  transform-style: preserve-3d;
+}
+ul > li {
+  position: absolute;
+  left: 50%;
+  top: calc(50% - 1.2rem);
+  --rotateX: calc(
+    1deg * var(--rotateDegrees) * calc(var(--day_idx) - var(--currentDay))
+  );
+  transform: rotateX(var(--rotateX)) translateZ(190px) translateX(-50%)
+    scale(var(--scale, 1));
+  --hue: calc(var(--rotateDegrees) * var(--day_idx));
+  background-color: hsl(var(--hue), 50%, var(--lightness, 50%));
+  width: 70%;
+  color: white;
+  display: grid;
+  grid-template-columns: 2.5rem auto;
+  height: 2.4rem;
+  transition: transform 500ms ease, background-color 500ms ease;
+}
+ul > li.active {
+  --lightness: 30%;
+  --scale: 1.1;
+}
+ul > li > * {
+  display: grid;
+  align-items: center;
+}
+li > time {
+  text-align: center;
+}
+li > span {
+  padding-inline-start: 0.5rem;
+  color: white;
+} /* controls */
+.controls {
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+.controls button {
+  width: 1.5rem;
+  aspect-ratio: 1;
+  font-size: 0.9rem;
+  color: white;
+  border: none;
+  background: #39657e;
+  display: flex;
+  place-items: center;
+}
+.controls button:hover,
+.controls button:focus {
+  background: rgb(6, 60, 131);
+}
+.controls button:active {
+  transform: scale(0.9);
+}
+.border {
+  width: 96%;
+  height: 3em;
+  border: 1px solid white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+</style>
+<header>
+    <h1>14 Feb 2025</h1>
+    <p>Happy Valentine's day my love!!</p>
+  </header>
+  <div class="container">
+    <ul></ul>
+    <div class="controls">
+      <button onclick="adjustDay(-1)">▲</button>
+      <button onclick="adjustDay(1)">▼</button>
+    </div>
+  </div>
+  <script>
+    const febHolidays = [
+  "Dear Baby,",
+  "Happy Valentine's day❤️",
+  "First of all, I love you❤️",
+  "My future wife🤭",
+  "You're my everything",
+  "You are my soulmate",
+  "And of course...",
+  "I will always be there for you",
+  "No matter how far we are🥰",
+  "You're the prettiest, cutest, funniest,",
+  "sweetest girl alive.",
+  "In one word, you're just perfect.😍",
+  "I'm the happiest man alive🥰",
+  "I'm so grateful I met you❤️",
+  "I'll always do my best to keep you happy🥺",
+  "You are the most special person in my life🥰",
+  "I don't want to lose you",
+  "And trust me I dont want anyone else",
+  "There's no one better than you❤️",
+  "You're the best baby!!",
+  "Or should I say, mo gro coco d'amour que j'adore a la folie XD",
+  "Wow!! Time flies, we've already been together for two months",
+  "There's some hardships,",
+  "but we overcame most of them",
+  "and it made me realised how important you are in my life❤️",
+  "This for you,",
+  "To l'amour",
+  "ek mo l'amour",
+  "fr 2 liv pomme d'amour🤣❤️",
+  "But anyways, Happy 2 months my sweet little girlfriend(wife🤭)",
+  "You're the love of my life,",
+
+];
+const ulEl = document.querySelector("ul");
+const d = new Date();
+let daynumber = d.getMonth() == 1 ? d.getDate() - 1 : 0;
+let activeIndex = daynumber;
+const rotate = -360 / febHolidays.length;
+init();
+function init() {
+  febHolidays.forEach((holiday, idx) => {
+    const liEl = document.createElement("li");
+    liEl.style.setProperty("--day_idx", idx);
+    liEl.innerHTML = `<time datetime="2022-02-${idx + 1}">${
+      idx + 1
+    }</time><span>${holiday}</span>`;
+    ulEl.append(liEl);
+  });
+  ulEl.style.setProperty("--rotateDegrees", rotate);
+  adjustDay(0);
+}
+function adjustDay(nr) {
+  daynumber += nr;
+  ulEl.style.setProperty("--currentDay", daynumber);
+  const activeEl = document.querySelector("li.active");
+  if (activeEl) activeEl.classList.remove("active");
+  activeIndex = (activeIndex + nr + febHolidays.length) % febHolidays.length;
+  const newActiveEl = document.querySelector(
+    `li:nth-child(${activeIndex + 1})`
+  );
+  document.body.style.backgroundColor = window.getComputedStyle(
+    newActiveEl
+  ).backgroundColor;
+  newActiveEl.classList.add("active");
+}
+window.addEventListener("keydown", (e) => {
+  switch (e.key) {
+    case "ArrowUp":
+      adjustDay(-1);
+      break;
+    case "ArrowDown":
+      adjustDay(1);
+      break;
+    default:
+      return;
+  }
+});
+
+  </script>
+  
